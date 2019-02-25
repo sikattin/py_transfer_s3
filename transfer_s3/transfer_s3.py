@@ -237,6 +237,7 @@ class TransferS3Notification(TransferS3Base):
                  from_addr: str,
                  to_addr: str,
                  cc_addr: str,
+                 smtp_port=25,
                  aws_cred_section=None,
                  logger=None,
                  handler=None,
@@ -256,6 +257,7 @@ class TransferS3Notification(TransferS3Base):
             from_addr (str): [description]
             to_addr (str): [description]
             cc_addr (str): [description]
+            smtp_port (int, optional): Defaults to 25. [description]
             aws_cred_section ([type], optional): Defaults to None. [description]
             logger ([type], optional): Defaults to None. [description]
             handler ([type], optional): Defaults to None. [description]
@@ -284,6 +286,7 @@ class TransferS3Notification(TransferS3Base):
             "to_addr": to_addr,
             "cc_addr": cc_addr
         }
+        self.smtp_port = smtp_port
         self.__ses_accesskey = ses_accesskey
         self.__ses_secretkey = ses_secretkey
         self.is_ses_auth = is_ses_auth
@@ -292,8 +295,10 @@ class TransferS3Notification(TransferS3Base):
         self._now = datetime.datetime.now().strftime("%Y/%m/%d")
 
         self._mail = my_utils.MailUtil(**self.mail_settings,
+                                       port=self.smtp_port,
                                        ses_accesskey=self.__ses_accesskey,
                                        ses_secretkey=self.__ses_secretkey,
+                                       port=
                                        is_sesauth=self.is_ses_auth
         )
     
