@@ -269,14 +269,14 @@ class TransferS3Notification(TransferS3Base):
             is_remove (bool, optional): Defaults to False. [description]
         """
         super(TransferS3Notification, self).__init__(bucket,
-                                                     aws_cred_section,
-                                                     logger,
-                                                     handler,
-                                                     aws_accesskey,
-                                                     aws_secretkey,
-                                                     aws_region,
-                                                     is_accesskey_auth,
-                                                     is_remove,
+                                                     aws_cred_section=aws_cred_section,
+                                                     logger=logger,
+                                                     handler=handler,
+                                                     aws_accesskey=aws_accesskey,
+                                                     aws_secretkey=aws_secretkey,
+                                                     aws_region=aws_region,
+                                                     is_accesskey_auth=is_accesskey_auth,
+                                                     is_remove=is_remove,
         )
         self.mail_settings = {
             "smtp_server": smtp_server,
@@ -384,7 +384,18 @@ class TransferS3Notification(TransferS3Base):
             self._logger.info("complete uploading {0} to {1}".format(src_path, self.bucket))
             self._mail.send_mail("[SUCCESS][{0}] {1} Transfer S3 - "
                                  .format(gethostname(), self._now),
-                                 "Transfer S3 failed.\nReason: {0}".format(str(e)))
+                                 "Notification for uploading to Amazon S3\n" \
+                                 "\nBucket: {0}\n" \
+                                 "SourceFilePath: {1}\n" \
+                                 "KeyName: {2}\n" \
+                                 "FileSize(Bytes): {3}\n\n" \
+                                 "f FileSize(Bytes) >= 8388608, selects MultiPartUpload."
+                                 .format(self.bucket,
+                                         src_path,
+                                         key_name,
+                                         os.path.getsize(src_path)
+                                         )
+            )
         finally:
             if self.is_remove:
                 os.remove(src_path)
