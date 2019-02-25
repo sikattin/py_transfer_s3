@@ -298,7 +298,6 @@ class TransferS3Notification(TransferS3Base):
                                        port=self.smtp_port,
                                        ses_accesskey=self.__ses_accesskey,
                                        ses_secretkey=self.__ses_secretkey,
-                                       port=
                                        is_sesauth=self.is_ses_auth
         )
     

@@ -13,7 +13,7 @@ with open('LICENSE') as f:
 
 setup(
     name='transfer_s3',
-    version='1.0.0',
+    version='1.0.1',
     description='Package for transfering the specified file/dir to S3',
     long_description=readme,
     author='takeki shikano',
