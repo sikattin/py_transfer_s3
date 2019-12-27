@@ -6,7 +6,7 @@
 # Author:      shikano.takeki
 #
 # Created:     21/02/2019
-# Copyright:   (c) shikano.takeki 2017
+# Copyright:   (c) shikano.takeki 2019
 # Licence:     <your licence>
 #-------------------------------------------------------------------------------
 # -*- coding: utf-8 -*-
