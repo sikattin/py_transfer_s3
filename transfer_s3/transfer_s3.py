@@ -26,9 +26,13 @@ from my_utils import my_utils
 LOGGER_HANDLER = 'rotation'
 LOGLEVEL = 20
 ARCHIVE_MODE = "w:gz"
+CONF_PATH = 'config/transfer_s3.ini'
 
+# need to convert to Class Object
 cfg_base = {
     "GENERAL": {
+        "ses_access": "",
+        "ses_secret": "",
         "region": "ap-northeast-1"
     },
     "LOG": {
@@ -37,6 +41,12 @@ cfg_base = {
     },
     "CREDENTIAL": {
         "cred_section_name": "default",
+    },
+    "Mail": {
+        "smtp_server": "",
+        "from_address": "",
+        "to_address": "",
+        "cc_address": ""
     }
 }
 
@@ -66,6 +76,7 @@ class TransferS3Base(object):
             is_accesskey_auth (bool, optional): Defaults to False. [description]
             is_remove (bool, optional): Defaults to True. [description]
         """
+        self._init_config(CONF_PATH)
         if aws_region is None:
             aws_region = cfg_base['GENERAL']['region']
         if aws_cred_section is None:
@@ -137,16 +148,12 @@ class TransferS3Base(object):
         """
         config = configparser.ConfigParser()
         config.read(conf_path)
-        for k, v in config.items():
-            if k == 'DEFAULT':
-                continue
+        for k, v in cfg_base.items():
             for key, value in v.items():
                 try:
-                    cfg_base[k][key] = value
-                except KeyError as key_e:
-                    self._logger.error(str(key_e))
-                    self._logger.error("invalid option set in config file.")
-                    raise key_e
+                    cfg_base[k][key] = config[k][key]
+                except KeyError:
+                    continue
     
     def _init_s3client(self, bucket: str):
         """Private only
@@ -194,12 +201,13 @@ class TransferS3Base(object):
             self._logger.info('created archive file {0}'.format(archive_name))
             return archive_name
 
-    def upload(self, src_path: str, key_name=None):
+    def upload(self, src_path: str, key_name=None, **extra_args):
         """Upload the specified file/dir to S3 bucket
         
         Args:
             src_path (str): [description]
-            key_name ([type], optional): Defaults to None. [description]
+            key_name ([str], optional): Defaults to None. [description]
+            extra_args (optional): extra arguments. show boto3 document for detail
         """
         if key_name is None:
             key_name = os.path.split(src_path)[1]
@@ -207,7 +215,7 @@ class TransferS3Base(object):
             'uploading status is logging to /var/log/S3Operation.log'
             .format(src_path))
         try:
-            self._client.upload(src_path, key_name=key_name)
+            self._client.upload(src_path, key_name=key_name, **extra_args)
         except (BotoCoreError, ClientError) as e:
             self._logger.error('raised unexpected error while uploading.')
             self._logger.exception(str(e))
@@ -356,12 +364,13 @@ class TransferS3Notification(TransferS3Base):
             self._logger.info('created archive file {0}'.format(archive_name))
             return archive_name
 
-    def upload(self, src_path: str, key_name=None):
+    def upload(self, src_path: str, key_name=None, **extra_args):
         """Upload the specified file/dir to S3 bucket
         
         Args:
             src_path (str): [description]
             key_name ([type], optional): Defaults to None. [description]
+            extra_args (optional): extra arguments. show boto3 document for detail
         """
         if key_name is None:
             key_name = os.path.split(src_path)[1]
@@ -369,7 +378,7 @@ class TransferS3Notification(TransferS3Base):
             'uploading status is logging to /var/log/S3Operation.log'
             .format(src_path))
         try:
-            self._client.upload(src_path, key_name=key_name)
+            self._client.upload(src_path, key_name=key_name, **extra_args)
         except (BotoCoreError, ClientError) as e:
             self._logger.error('raised unexpected error while uploading.')
             self._logger.exception(str(e))

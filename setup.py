@@ -19,6 +19,7 @@ setup(
     author_email='',
     url='',
     license=license,
-    packages=find_packages(exclude=('tests', 'docs'))
+    packages=find_packages(exclude=('tests', 'docs')),
+    package_data={'transfer_s3': ['config/transfer_s3.ini']}
 )
 
