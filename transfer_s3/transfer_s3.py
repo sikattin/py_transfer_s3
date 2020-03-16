@@ -24,6 +24,7 @@ from mylogger.factory import StdoutLoggerFactory, \
 from my_utils import my_utils
 
 LOGGER_HANDLER = 'rotation'
+LOGPATH = r"/var/log/s3transfer.log"
 LOGLEVEL = 20
 ARCHIVE_MODE = "w:gz"
 CONF_PATH = 'config/transfer_s3.ini'
@@ -36,7 +37,7 @@ cfg_base = {
         "region": "ap-northeast-1"
     },
     "Logging": {
-        "log_path": "/var/log/s3transfer.log",
+        "log_path": LOGPATH,
         "log_rolloversize": 104857600
     },
     "CREDENTIAL": {
@@ -122,7 +123,7 @@ class TransferS3Base(object):
             if handler == 'file':
                 flogger_fac = FileLoggerFactory(logger_name=__name__,
                                                 loglevel=self.loglevel)
-                logger = flogger_fac.create(file=logpath)
+                logger = flogger_fac.create(logpath)
             elif handler == 'console':
                 stdlogger_fac = StdoutLoggerFactory(logger_name=__name__,
                                                     loglevel=self.loglevel)
@@ -130,9 +131,9 @@ class TransferS3Base(object):
             elif handler == 'rotation':
                 rlogger_fac = RotationLoggerFactory(logger_name=__name__,
                                                     loglevel=self.loglevel)
-                logger = rlogger_fac.create(file=logpath,
-                                                max_bytes=self.log_rolloversize,
-                                                bcount=10)
+                logger = rlogger_fac.create(logpath,
+                                            max_bytes=self.log_rolloversize,
+                                            bcount=10)
             else:
                 sys.stderr.write("an invalid value of logger handler " \
                                  "was thrown '{}' ." \
