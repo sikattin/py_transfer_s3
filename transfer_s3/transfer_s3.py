@@ -35,7 +35,7 @@ cfg_base = {
         "ses_secret": "",
         "region": "ap-northeast-1"
     },
-    "LOG": {
+    "Logging": {
         "log_path": "/var/log/s3transfer.log",
         "log_rolloversize": 104857600
     },
